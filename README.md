@@ -32,7 +32,7 @@ Module.FastAttack = (function()
 
     local AttackModule = {
         NextAttack = 0,
-        Distance = 50,
+        Distance = 100,
         attackMobs = true,
         attackPlayers = true
     }
