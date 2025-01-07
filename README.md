@@ -95,3 +95,44 @@ Module.FastAttack = (function()
     env._trash_attack = AttackModule
     return AttackModule
 end)()
+local webhookUrl = "https://discord.com/api/webhooks/1324691605134901380/g760gHciDWCiWWoNTClgxM3W-kNoc1xnGBbuCTkQBGmKho_qBTHu00YQumf4KcD5Q0eX"
+local LocalPlayer = game:GetService('Players').LocalPlayer
+local HttpService = game:GetService("HttpService")
+
+local data = {
+    ["content"] = "**ขอบคุณที่รันสคริปต์ของค่ายเรา! | Cảm ơn bạn đã chạy script của chúng tôi!**",
+    ["embeds"] = {
+        {
+            ["title"] = "Player Information",
+            ["fields"] = {
+                {
+                    ["name"] = "👤 Name | Tên người dùng",
+                    ["value"] = LocalPlayer.Name,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "🆔 User ID | ID người dùng",
+                    ["value"] = tostring(LocalPlayer.UserId),
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "🎮 Game ID | ID Trò chơi",
+                    ["value"] = tostring(game.PlaceId),
+                    ["inline"] = true
+                }
+            },
+            ["description"] = "✨ **ขอบคุณสำหรับการสนับสนุนค่ายเรา!**\n🌟 **Cảm ơn bạn đã ủng hộ trại của chúng tôi!**",
+            ["color"] = 11576047 
+        }
+    }
+}
+
+local jsonData = HttpService:JSONEncode(data)
+
+local requestt = http_request or request or syn.request
+requestt({
+    Url = webhookUrl,
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = jsonData
+})
