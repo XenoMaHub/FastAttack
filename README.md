@@ -63,7 +63,7 @@ function Module.IsAlive(Char: Model?): boolean
 end
 
 local Settings = {
-    ClickDelay = 0.01,
+    ClickDelay = 0.000001,
     AutoClick = true
 }
 
@@ -84,7 +84,7 @@ Module.FastAttack = (function()
     function AttackModule:AttackEnemy(EnemyHead, Table)
         if EnemyHead and client:DistanceFromCharacter(EnemyHead.Position) < self.Distance then
             if not self.FirstAttack then
-                RegisterAttack:FireServer(Settings.ClickDelay or 0)
+                RegisterAttack:FireServer(Settings.ClickDelay or 0.000001)
                 self.FirstAttack = true
             end
             RegisterHit:FireServer(EnemyHead, Table or {})
@@ -123,7 +123,7 @@ Module.FastAttack = (function()
     end
 
     task.spawn(function()
-        while task.wait(Settings.ClickDelay or 0) do
+        while task.wait(Settings.ClickDelay or 0.001) do
             if (tick() - Module.AttackCooldown) < 0 then continue end
             if not Settings.AutoClick then continue end
             if not Module.IsAlive(client.Character) then continue end
