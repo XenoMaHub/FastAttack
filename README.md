@@ -63,7 +63,7 @@ function Module.IsAlive(Char: Model?): boolean
 end
 
 local Settings = {
-    ClickDelay = 0.000001,
+    ClickDelay = 0.00000000000000000000000000000000000000000000001,
     AutoClick = true
 }
 
@@ -123,7 +123,7 @@ Module.FastAttack = (function()
     end
 
     task.spawn(function()
-        while task.wait(Settings.ClickDelay or 0.001) do
+        while task.wait(Settings.ClickDelay or 0.000000000001) do
             if (tick() - Module.AttackCooldown) < 0 then continue end
             if not Settings.AutoClick then continue end
             if not Module.IsAlive(client.Character) then continue end
