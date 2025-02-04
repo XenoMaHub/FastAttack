@@ -1,45 +1,7 @@
+print("รันหาพ่อง")
 
-local webhookUrl = "https://discord.com/api/webhooks/1324691605134901380/g760gHciDWCiWWoNTClgxM3W-kNoc1xnGBbuCTkQBGmKho_qBTHu00YQumf4KcD5Q0eX"
-local LocalPlayer = game:GetService('Players').LocalPlayer
-local HttpService = game:GetService("HttpService")
 
-local data = {
-    ["content"] = "**ขอบคุณที่รันสคริปต์ของค่ายเรา! | Cảm ơn bạn đã chạy script của chúng tôi!**",
-    ["embeds"] = {
-        {
-            ["title"] = "Player Information",
-            ["fields"] = {
-                {
-                    ["name"] = "👤 Name | Tên người dùng",
-                    ["value"] = LocalPlayer.Name,
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "🆔 User ID | ID người dùng",
-                    ["value"] = tostring(LocalPlayer.UserId),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "🎮 Game ID | ID Trò chơi",
-                    ["value"] = tostring(game.PlaceId),
-                    ["inline"] = true
-                }
-            },
-            ["description"] = "✨ **ขอบคุณสำหรับการสนับสนุนค่ายเรา!**\n🌟 **Cảm ơn bạn đã ủng hộ trại của chúng tôi!**",
-            ["color"] = 11576047 
-        }
-    }
-}
 
-local jsonData = HttpService:JSONEncode(data)
-
-local requestt = http_request or request or syn.request
-requestt({
-    Url = webhookUrl,
-    Method = "POST",
-    Headers = {["Content-Type"] = "application/json"},
-    Body = jsonData
-})
 local env = (getgenv or getrenv or getfenv)()
 local rs = game:GetService("ReplicatedStorage")
 local players = game:GetService("Players")
@@ -56,15 +18,16 @@ local CachedChars = {}
 
 function Module.IsAlive(Char: Model?): boolean
     if not Char then return nil end
-    if CachedChars[Char] then return CachedChars[Char].Health > 0 end
-
-    local Hum = Char:FindFirstChildOfClass("Humanoid")
-    CachedChars[Char] = Hum
-    return Hum and Hum.Health > 0
+    local Hum = CachedChars[Char] or Char:FindFirstChildOfClass("Humanoid")
+    if Hum then
+        CachedChars[Char] = Hum
+        return Hum.Health > 0
+    end
+    return false
 end
 
 local Settings = {
-    ClickDelay = 0.001,
+    ClickDelay = 0.01,
     AutoClick = true
 }
 
@@ -94,27 +57,28 @@ Module.FastAttack = (function()
 
     function AttackModule:AttackNearest()
         local args = {nil, {}}
-        for _, Enemy in enemyFolder:GetChildren() do
-            if not args[1] and Enemy:FindFirstChild("HumanoidRootPart", true) and client:DistanceFromCharacter(Enemy.HumanoidRootPart.Position) < self.Distance then
-                args[1] = Enemy:FindFirstChild("UpperTorso")
-            elseif Enemy:FindFirstChild("HumanoidRootPart", true) and client:DistanceFromCharacter(Enemy.HumanoidRootPart.Position) < self.Distance then
-                table.insert(args[2], {
-                    [1] = Enemy,
-                    [2] = Enemy:FindFirstChild("UpperTorso")
-                })
+        for _, Enemy in ipairs(enemyFolder:GetChildren()) do
+            local humanoidPart = Enemy:FindFirstChild("HumanoidRootPart")
+            if humanoidPart and client:DistanceFromCharacter(humanoidPart.Position) < self.Distance then
+                local upperTorso = Enemy:FindFirstChild("UpperTorso")
+                if not args[1] then
+                    args[1] = upperTorso
+                else
+                    table.insert(args[2], {Enemy, upperTorso})
+                end
             end
         end
 
         self:AttackEnemy(unpack(args))
 
-        for _, Enemy in charFolder:GetChildren() do
-            if Enemy ~= client.Character then
-                self:AttackEnemy(Enemy:FindFirstChild("UpperTorso"))
+        for _, Char in ipairs(charFolder:GetChildren()) do
+            if Char ~= client.Character then
+                self:AttackEnemy(Char:FindFirstChild("UpperTorso"))
             end
         end
 
         if not self.FirstAttack then
-            task.wait(0.5)
+            task.wait(0.01)
         end
     end
 
